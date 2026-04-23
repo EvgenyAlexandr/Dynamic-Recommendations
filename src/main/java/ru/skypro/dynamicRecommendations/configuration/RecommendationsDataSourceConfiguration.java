@@ -13,17 +13,16 @@ import javax.sql.DataSource;
 public class RecommendationsDataSourceConfiguration {
     @Bean(name = "recommendationsDataSource")
     public DataSource recommendationsDataSource(@Value("${application.recommendations-db.url}") String recommendationsUrl) {
-        var dataSource = new HikariDataSource();
-        dataSource.setJdbcUrl(recommendationsUrl);
-        dataSource.setDriverClassName("org.h2.Driver");
+        var dataSource = new HikariDataSource();                // HikariCP — высокопроизводительный пул соединений
+        dataSource.setJdbcUrl(recommendationsUrl);              // Используется H2 (файловая БД)
+        dataSource.setDriverClassName("org.h2.Driver");         // Только чтение — безопасно и оптимизировано
         dataSource.setReadOnly(true);
         return dataSource;
     }
 
     @Bean(name = "recommendationsJdbcTemplate")
     public JdbcTemplate recommendationsJdbcTemplate(
-            @Qualifier("recommendationsDataSource") DataSource dataSourcedd
-    ) {
-        return new JdbcTemplate(dataSourcedd);
+            @Qualifier("recommendationsDataSource") DataSource dataSourced) {
+        return new JdbcTemplate(dataSourced);
     }
 }
