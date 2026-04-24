@@ -1,29 +1,24 @@
-package ru.skypro.dynamicRecommendations.entity;
+package ru.skypro.dynamicRecommendations.DTO;
 
-import jakarta.persistence.*;
 import java.util.List;
 import java.util.UUID;
 
-@Entity
-@Table(name = "rules")
-public class RuleEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+public class RuleResponseDto {
     private UUID id;
-
-    @Column(name = "product_name", nullable = false)
     private String productName;
-
-    @Column(name = "product_id", nullable = false)
     private UUID productId;
-
-    @Column(name = "product_text", nullable = false, columnDefinition = "TEXT")
     private String productText;
+    private List<QueryDto> rule;
 
-    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, orphanRemoval = true)
-    @JoinColumn(name = "rule_id")
-    private List<QueryEntity> queries;
+    public RuleResponseDto() {}
+
+    public RuleResponseDto(UUID id, String productName, UUID productId, String productText, List<QueryDto> rule) {
+        this.id = id;
+        this.productName = productName;
+        this.productId = productId;
+        this.productText = productText;
+        this.rule = rule;
+    }
 
     // getters and setters
     public UUID getId() { return id; }
@@ -34,11 +29,6 @@ public class RuleEntity {
     public void setProductId(UUID productId) { this.productId = productId; }
     public String getProductText() { return productText; }
     public void setProductText(String productText) { this.productText = productText; }
-    public List<QueryEntity> getQueries() { return queries; }
-    public void setQueries(List<QueryEntity> queries) { this.queries = queries; }
+    public List<QueryDto> getRule() { return rule; }
+    public void setRule(List<QueryDto> rule) { this.rule = rule; }
 }
-
-
-
-
-
