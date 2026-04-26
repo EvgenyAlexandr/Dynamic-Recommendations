@@ -17,7 +17,7 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableJpaRepositories(
-        basePackages = "ru.skypro.dynamicRecommendations.repository.jpa",
+        basePackages = "ru.skypro.dynamicRecommendations.repository",
         entityManagerFactoryRef = "defaultEntityManagerFactory",
         transactionManagerRef = "defaultTransactionManager"
 )
