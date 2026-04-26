@@ -31,9 +31,15 @@
 	</properties>
 	<dependencies>
 
-		<dependency>
+		<dependency> 	<!-- Модуль для создания веб‑приложений (Spring MVC, встроенный Tomcat) -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+
+		<dependency>	<!-- Spring Boot Starter Test: зависимости для написания и запуска тестов -->
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>    <!-- Модуль для взаимодействия с БД - JDBC  -->
@@ -47,19 +53,16 @@
 			<scope>runtime</scope>
 		</dependency>
 
-
 		<dependency>	<!-- PostgreSQL -->
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 
-
 		<dependency>	<!-- JPA для второй БД -->
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
-
 
 		<dependency>	<!-- Liquibase для миграций -->
 			<groupId>org.liquibase</groupId>
@@ -71,10 +74,16 @@
 			<artifactId>caffeine</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
+		<dependency>  <!-- Модуль для работы с Telegram-Bot  -->
+			<groupId>org.telegram</groupId>
+			<artifactId>telegrambots-spring-boot-starter</artifactId>
+			<version>6.8.0</version>
+		</dependency>
+
+		<dependency>    <!-- Модуль для работы Swagger UI для документирования REST‑API -->
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.6.0</version>
 		</dependency>
 
 	</dependencies>
