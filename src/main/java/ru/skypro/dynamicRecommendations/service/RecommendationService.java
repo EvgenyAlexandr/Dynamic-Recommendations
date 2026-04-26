@@ -1,4 +1,4 @@
-package ru.skypro.dynamicRecommendations.servise;
+package ru.skypro.dynamicRecommendations.service;
 
 import org.springframework.stereotype.Service;
 import ru.skypro.dynamicRecommendations.DTO.RecommendationDto;
@@ -13,7 +13,18 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
+/**
+ * Сервис для получения рекомендаций пользователю.
+ * <p>
+ * Комбинирует два типа правил:
+ * <ul>
+ *     <li><b>Статические правила</b> — реализованы в коде</li>
+ *     <li><b>Динамические правила</b> — загружаются из базы данных</li>
+ * </ul>
+ * </p>
+ *
+ * @author DynamicRecommendations Team
+ */
 @Service
 public class RecommendationService {
 
@@ -29,15 +40,19 @@ public class RecommendationService {
         this.dynamicRuleService = dynamicRuleService;
     }
 
+    /**
+     * Получает все рекомендации для пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return объект с userId и списком подходящих рекомендаций
+     */
     public RecommendationResponse getRecommendations(UUID userId) {
-        // Статические правила
         List<RecommendationDto> staticRecommendations = staticRuleSets.stream()
                 .map(rule -> rule.check(userId))
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        // Динамические правила из БД
         List<RuleEntity> dynamicRules = ruleRepository.findAll();
         List<RecommendationDto> dynamicRecommendations = dynamicRules.stream()
                 .map(rule -> dynamicRuleService.evaluateRule(rule, userId))
@@ -45,7 +60,6 @@ public class RecommendationService {
                 .map(Optional::get)
                 .collect(Collectors.toList());
 
-        // Объединяем
         List<RecommendationDto> allRecommendations = Stream.concat(
                 staticRecommendations.stream(),
                 dynamicRecommendations.stream()
@@ -53,5 +67,4 @@ public class RecommendationService {
 
         return new RecommendationResponse(userId, allRecommendations);
     }
-
 }

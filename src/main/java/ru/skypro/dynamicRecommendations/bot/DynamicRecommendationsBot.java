@@ -1,18 +1,30 @@
 package ru.skypro.dynamicRecommendations.bot;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import ru.skypro.dynamicRecommendations.DTO.RecommendationDto;
-import ru.skypro.dynamicRecommendations.servise.RecommendationService;
-import org.springframework.beans.factory.annotation.Value;
+import ru.skypro.dynamicRecommendations.service.RecommendationService;
 import ru.skypro.dynamicRecommendations.repository.UserDataRepository;
 
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * Telegram бот для получения динамических рекомендаций банковских продуктов.
+ * <p>
+ * Поддерживает команды:
+ * <ul>
+ *     <li>/start — вывод приветственного сообщения и справки</li>
+ *     <li>/recommend &lt;Имя пользователя&gt; — получение рекомендаций для указанного клиента</li>
+ * </ul>
+ * </p>
+ *
+ * @author DynamicRecommendations Team
+ */
 @Component
 public class DynamicRecommendationsBot extends TelegramLongPollingBot {
 
@@ -21,6 +33,14 @@ public class DynamicRecommendationsBot extends TelegramLongPollingBot {
     private final RecommendationService recommendationService;
     private final UserDataRepository userDataRepository;
 
+    /**
+     * Конструктор бота.
+     *
+     * @param botToken               токен бота из Telegram BotFather
+     * @param botName                имя бота (username)
+     * @param recommendationService  сервис генерации рекомендаций
+     * @param userDataRepository     репозиторий для поиска пользователей
+     */
     public DynamicRecommendationsBot(@Value("${telegram.bot.token}") String botToken,
                                      @Value("${telegram.bot.name}") String botName,
                                      RecommendationService recommendationService,
@@ -57,8 +77,13 @@ public class DynamicRecommendationsBot extends TelegramLongPollingBot {
         }
     }
 
+    /**
+     * Обрабатывает команду /recommend: ищет пользователя по имени и возвращает рекомендации.
+     *
+     * @param chatId   идентификатор чата для отправки ответа
+     * @param fullName полное имя пользователя для поиска
+     */
     private void handleRecommendation(long chatId, String fullName) {
-        // Поиск пользователя по имени в базе transactions
         String sql = "SELECT DISTINCT user_id, user_name FROM transactions WHERE user_name = ?";
         var results = userDataRepository.getJdbcTemplate().query(sql,
                 (rs, rowNum) -> new Object[]{rs.getObject("user_id", UUID.class), rs.getString("user_name")},
@@ -90,6 +115,12 @@ public class DynamicRecommendationsBot extends TelegramLongPollingBot {
         sendMessage(chatId, answer.toString());
     }
 
+    /**
+     * Отправляет текстовое сообщение в указанный чат.
+     *
+     * @param chatId идентификатор чата
+     * @param text   текст сообщения
+     */
     private void sendMessage(long chatId, String text) {
         SendMessage message = new SendMessage();
         message.setChatId(String.valueOf(chatId));
@@ -102,7 +133,12 @@ public class DynamicRecommendationsBot extends TelegramLongPollingBot {
     }
 
     @Override
-    public String getBotUsername() { return botName; }
+    public String getBotUsername() {
+        return botName;
+    }
+
     @Override
-    public String getBotToken() { return botToken; }
+    public String getBotToken() {
+        return botToken;
+    }
 }

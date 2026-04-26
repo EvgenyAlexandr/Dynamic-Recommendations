@@ -1,19 +1,31 @@
-package ru.skypro.dynamicRecommendations.сontroller;
+package ru.skypro.dynamicRecommendations.controller;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import ru.skypro.dynamicRecommendations.DTO.*;
-
-import ru.skypro.dynamicRecommendations.entity.RuleEntity;
 import ru.skypro.dynamicRecommendations.entity.QueryEntity;
+import ru.skypro.dynamicRecommendations.entity.RuleEntity;
 import ru.skypro.dynamicRecommendations.repository.RuleRepository;
-import ru.skypro.dynamicRecommendations.servise.RuleStatsService;
+import ru.skypro.dynamicRecommendations.service.RuleStatsService;
 
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+/**
+ * REST-контроллер для управления динамическими правилами.
+ * <p>
+ * Предоставляет endpoints:
+ * <ul>
+ *     <li>POST /rule — создание нового правила</li>
+ *     <li>GET /rule — получение всех правил</li>
+ *     <li>DELETE /rule/{id} — удаление правила</li>
+ *     <li>GET /rule/stats — получение статистики срабатываний</li>
+ * </ul>
+ * </p>
+ *
+ * @author DynamicRecommendations Team
+ */
 @RestController
 @RequestMapping("/rule")
 public class RuleController {
@@ -21,13 +33,18 @@ public class RuleController {
     private final RuleRepository ruleRepository;
     private final RuleStatsService ruleStatsService;
 
-
     public RuleController(RuleRepository ruleRepository,
                           RuleStatsService ruleStatsService) {
         this.ruleRepository = ruleRepository;
         this.ruleStatsService = ruleStatsService;
     }
 
+    /**
+     * Создаёт новое правило.
+     *
+     * @param request DTO с данными правила
+     * @return созданное правило
+     */
     @PostMapping
     public ResponseEntity<RuleResponseDto> createRule(@RequestBody RuleRequestDto request) {
         RuleEntity entity = new RuleEntity();
@@ -40,6 +57,11 @@ public class RuleController {
         return ResponseEntity.ok(convertToResponse(saved));
     }
 
+    /**
+     * Возвращает список всех правил.
+     *
+     * @return список правил
+     */
     @GetMapping
     public ResponseEntity<RuleListResponseDto> getAllRules() {
         var rules = ruleRepository.findAll().stream()
@@ -48,6 +70,12 @@ public class RuleController {
         return ResponseEntity.ok(new RuleListResponseDto(rules));
     }
 
+    /**
+     * Удаляет правило по ID.
+     *
+     * @param id идентификатор правила
+     * @return HTTP 204 No Content при успехе, иначе 404 Not Found
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRule(@PathVariable UUID id) {
         if (ruleRepository.existsById(id)) {
@@ -55,6 +83,16 @@ public class RuleController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    /**
+     * Возвращает статистику срабатываний всех правил.
+     *
+     * @return статистика
+     */
+    @GetMapping("/stats")
+    public ResponseEntity<RuleStatsResponseDto> getStats() {
+        return ResponseEntity.ok(ruleStatsService.getAllStats());
     }
 
     private RuleResponseDto convertToResponse(RuleEntity entity) {
@@ -85,10 +123,5 @@ public class RuleController {
             dto.setNegate(entity.isNegate());
             return dto;
         }).collect(Collectors.toList());
-    }
-
-    @GetMapping("/stats")
-    public ResponseEntity<RuleStatsResponseDto> getStats() {
-        return ResponseEntity.ok(ruleStatsService.getAllStats());
     }
 }

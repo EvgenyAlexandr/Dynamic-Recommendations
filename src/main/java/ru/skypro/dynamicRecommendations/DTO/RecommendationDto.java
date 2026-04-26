@@ -3,13 +3,18 @@ package ru.skypro.dynamicRecommendations.DTO;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * DTO для рекомендации продукта.
+ *
+ * @author DynamicRecommendations Team
+ */
 public class RecommendationDto {
-    private String name;   // Название продукта
-    private UUID id;       // Уникальный идентификатор продукта
-    private String text;   // Описание/текст рекомендации
+    private String name;
+    private UUID id;
+    private String text;
 
-    // Конструкторы, геттеры/сеттеры, equals/hashCode/toString
-    public RecommendationDto() {}
+    public RecommendationDto() {
+    }
 
     public RecommendationDto(String name, UUID id, String text) {
         this.name = name;
