@@ -138,4 +138,14 @@ public class UserDataRepository {
         });
     }
 
+    public JdbcTemplate getJdbcTemplate() { return jdbcTemplate; }
+
+    public void clearCaches() {
+        usesProductTypeCache.invalidateAll();
+        totalDepositsCache.invalidateAll();
+        totalSpendsCache.invalidateAll();
+        totalDepositsByProductCache.invalidateAll();
+        transactionCountCache.invalidateAll();
+    }
+
 }

@@ -4,14 +4,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import ru.skypro.dynamicRecommendations.DTO.RuleRequestDto;
-import ru.skypro.dynamicRecommendations.DTO.RuleResponseDto;
-import ru.skypro.dynamicRecommendations.DTO.RuleListResponseDto;
-import ru.skypro.dynamicRecommendations.DTO.QueryDto;
+import ru.skypro.dynamicRecommendations.DTO.*;
 
 import ru.skypro.dynamicRecommendations.entity.RuleEntity;
 import ru.skypro.dynamicRecommendations.entity.QueryEntity;
 import ru.skypro.dynamicRecommendations.repository.RuleRepository;
+import ru.skypro.dynamicRecommendations.servise.RuleStatsService;
 
 import java.util.List;
 import java.util.UUID;
@@ -22,9 +20,13 @@ import java.util.stream.Collectors;
 public class RuleController {
 
     private final RuleRepository ruleRepository;
+    private final RuleStatsService ruleStatsService;
 
-    public RuleController(RuleRepository ruleRepository) {
+
+    public RuleController(RuleRepository ruleRepository,
+                          RuleStatsService ruleStatsService) {
         this.ruleRepository = ruleRepository;
+        this.ruleStatsService = ruleStatsService;
     }
 
     @PostMapping
@@ -84,5 +86,10 @@ public class RuleController {
             dto.setNegate(entity.isNegate());
             return dto;
         }).collect(Collectors.toList());
+    }
+
+    @GetMapping("/stats")
+    public ResponseEntity<RuleStatsResponseDto> getStats() {
+        return ResponseEntity.ok(ruleStatsService.getAllStats());
     }
 }

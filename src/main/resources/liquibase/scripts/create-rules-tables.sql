@@ -21,3 +21,9 @@ CREATE TABLE IF NOT EXISTS query_arguments (
     query_id BIGINT NOT NULL REFERENCES queries(id) ON DELETE CASCADE,
     argument VARCHAR(255) NOT NULL
 );
+
+-- changeset author EA:4
+CREATE TABLE IF NOT EXISTS rule_stats (
+    rule_id UUID PRIMARY KEY REFERENCES rules(id) ON DELETE CASCADE,
+    count BIGINT NOT NULL DEFAULT 0
+);

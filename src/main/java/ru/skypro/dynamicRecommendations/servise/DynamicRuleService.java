@@ -14,9 +14,12 @@ import java.util.UUID;
 public class DynamicRuleService {
 
     private final UserDataRepository userDataRepository;
+    private final RuleStatsService ruleStatsService;
 
-    public DynamicRuleService(UserDataRepository userDataRepository) {
+
+    public DynamicRuleService(UserDataRepository userDataRepository, RuleStatsService ruleStatsService) {
         this.userDataRepository = userDataRepository;
+        this.ruleStatsService   = ruleStatsService;
     }
 
     public Optional<RecommendationDto> evaluateRule(RuleEntity rule, UUID userId) {
@@ -24,6 +27,7 @@ public class DynamicRuleService {
                 .allMatch(query -> evaluateQuery(query, userId));
 
         if (allMatches) {
+            ruleStatsService.incrementStat(rule.getId()); // инкремент
             return Optional.of(new RecommendationDto(
                     rule.getProductName(),
                     rule.getProductId(),
@@ -32,6 +36,7 @@ public class DynamicRuleService {
         }
         return Optional.empty();
     }
+
 
     private boolean evaluateQuery(QueryEntity query, UUID userId) {
         boolean result = switch (query.getQuery()) {

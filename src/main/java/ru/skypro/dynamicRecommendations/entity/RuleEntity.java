@@ -25,6 +25,9 @@ public class RuleEntity {
     @JoinColumn(name = "rule_id")
     private List<QueryEntity> queries;
 
+    @OneToOne(mappedBy = "rule", cascade = CascadeType.ALL, orphanRemoval = true)
+    private RuleStatsEntity stats;
+
     // getters and setters
     public UUID getId() { return id; }
     public void setId(UUID id) { this.id = id; }
