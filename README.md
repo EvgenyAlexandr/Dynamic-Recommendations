@@ -1,8 +1,12 @@
-# Dynamic Recommendations
+# Telegram Bot - Dynamic Recommendations
 
-Сервис для динамического формирования рекомендаций банковских продуктов на основе транзакционной истории пользователя.
+📌 Описание проекта
 
-## Документация
+Проект представляет собой backend-систему банковского приложения с базовыми операциями и системой рекомендаций, интегрированной в Telegram-бота.
+Система анализирует поведение пользователей и формирует персонализированные рекомендации на основе динамических правил.
+
+
+## ⚙️ Документация
 
 Вся документация находится в [Wiki](https://github.com/EvgenyAlexandr/Dynamic-Recommendations/wiki) проекта.
 
@@ -16,10 +20,22 @@
 ## Быстрый старт
 
 ### Требования
-- JDK 17
-- PostgreSQL 14+
+- JDK 17+
+- Maven 3.8+
+- PostgreSQL 13+
 
-### Сборка и запуск
+### 📦 Сборка и запуск
 ```bash
 ./mvnw clean package
+```
+```bash
 java -jar target/dynamicRecommendations-0.0.1-SNAPSHOT.jar
+```
+
+## Swagger/OpenAPI
+
+Документация API доступна:
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
+
