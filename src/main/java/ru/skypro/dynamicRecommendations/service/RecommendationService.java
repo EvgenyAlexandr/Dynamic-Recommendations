@@ -1,0 +1,70 @@
+package ru.skypro.dynamicRecommendations.service;
+
+import org.springframework.stereotype.Service;
+import ru.skypro.dynamicRecommendations.DTO.RecommendationDto;
+import ru.skypro.dynamicRecommendations.DTO.RecommendationResponse;
+import ru.skypro.dynamicRecommendations.entity.RuleEntity;
+import ru.skypro.dynamicRecommendations.repository.RuleRepository;
+import ru.skypro.dynamicRecommendations.recommendation.RecommendationRuleSet;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * Сервис для получения рекомендаций пользователю.
+ * <p>
+ * Комбинирует два типа правил:
+ * <ul>
+ *     <li><b>Статические правила</b> — реализованы в коде</li>
+ *     <li><b>Динамические правила</b> — загружаются из базы данных</li>
+ * </ul>
+ * </p>
+ *
+ * @author DynamicRecommendations Team
+ */
+@Service
+public class RecommendationService {
+
+    private final List<RecommendationRuleSet> staticRuleSets;
+    private final RuleRepository ruleRepository;
+    private final DynamicRuleService dynamicRuleService;
+
+    public RecommendationService(List<RecommendationRuleSet> staticRuleSets,
+                                 RuleRepository ruleRepository,
+                                 DynamicRuleService dynamicRuleService) {
+        this.staticRuleSets = staticRuleSets;
+        this.ruleRepository = ruleRepository;
+        this.dynamicRuleService = dynamicRuleService;
+    }
+
+    /**
+     * Получает все рекомендации для пользователя.
+     *
+     * @param userId идентификатор пользователя
+     * @return объект с userId и списком подходящих рекомендаций
+     */
+    public RecommendationResponse getRecommendations(UUID userId) {
+        List<RecommendationDto> staticRecommendations = staticRuleSets.stream()
+                .map(rule -> rule.check(userId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        List<RuleEntity> dynamicRules = ruleRepository.findAll();
+        List<RecommendationDto> dynamicRecommendations = dynamicRules.stream()
+                .map(rule -> dynamicRuleService.evaluateRule(rule, userId))
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
+
+        List<RecommendationDto> allRecommendations = Stream.concat(
+                staticRecommendations.stream(),
+                dynamicRecommendations.stream()
+        ).collect(Collectors.toList());
+
+        return new RecommendationResponse(userId, allRecommendations);
+    }
+}
